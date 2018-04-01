@@ -5,7 +5,7 @@ shift 1
 N="$#"
 
 for w in "$@"; do
-  grep "$w" "$REPO/aiura/"*.md | sed 's/:.*//; s/.*aiura//' | uniq
+  grep -i "$w" "$REPO/aiura/"*.md | sed 's/:.*//; s/.*aiura//' | uniq
 done |
 sort | uniq -c |
 awk "\$1 == $N { print \$2 }" |

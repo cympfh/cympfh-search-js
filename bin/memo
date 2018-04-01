@@ -6,7 +6,7 @@ and-grep() {
     else
         W="$1"
         shift 1
-        cat | grep "$W" | and-grep "$@"
+        cat | grep -i "$W" | and-grep "$@"
     fi
 }
 
