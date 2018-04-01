@@ -67,7 +67,7 @@ function make_html_taglibro(data) {
 
 function get(qs, api, idName, make) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://localhost:10030/search/' + api + '?q=' + qs, true);
+    xhr.open('GET', '@MYSELF/search/' + api + '?q=' + qs, true);
     xhr.onload = function (e) {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {

@@ -1,7 +1,9 @@
-const yaml = require('node-yaml');
 const expandTilde = require('expand-tilde');
 const express = require('express');
+const fs = require('fs');
+const http = require('http');
 const url = require('url');
+const yaml = require('node-yaml');
 const {execFile} = require('child_process');
 
 const config = yaml.readSync('config.yml');
@@ -12,6 +14,17 @@ console.assert(config.memo.url);
 config.repo.path = expandTilde(config.repo.path);
 config.repo.pull_after = !!config.repo.pull_after;
 config.port = config.port || 10030;
+
+var myself = null;
+http.get('http://httpbin.org/ip', (response) => {
+    let data = '';
+    response.on('data', chunk => { data += chunk; });
+    response.on('end', () => {
+        myself = JSON.parse(data).origin;
+        console.log(`I am ${myself}`);
+        console.log(`Listen on ${myself}:${config.port}`);
+    });
+});
 
 var app = express();
 
@@ -26,6 +39,7 @@ function exec(res, file, args, cont) {
 }
 
 app.get('/search/memo', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
     let query = url.parse(req.url, true).query;
     if (query.q) {
         let words = query.q.split(',');
@@ -45,6 +59,7 @@ app.get('/search/memo', (req, res) => {
 });
 
 app.get('/search/aiura', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
     let query = url.parse(req.url, true).query;
     if (query.q) {
         let words = query.q.split(',');
@@ -64,6 +79,7 @@ app.get('/search/aiura', (req, res) => {
 });
 
 app.get('/search/taglibro', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
     let query = url.parse(req.url, true).query;
     if (query.q) {
         let words = query.q.split(',');
@@ -83,7 +99,11 @@ app.get('/search/taglibro', (req, res) => {
 });
 
 app.get('/search', (req, res) => {
-    res.sendFile('index.html', {root: __dirname});
+    fs.readFile("./index.html", (err, data) => {
+        data = data.toString().replace(/@MYSELF/, `http://${myself}:${config.port}`);
+        res.writeHead(200);
+        res.end(data);
+    });
 });
 
 app.listen(config.port);
