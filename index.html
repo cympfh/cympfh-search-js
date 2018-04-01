@@ -22,10 +22,24 @@
   <script>
 
 
+var count = 0;
+function result_clear() {
+    count = 0;
+    var obj = document.getElementById('container-result');
+    obj.innerHTML = 'searching...';
+}
+
+function result_increase(n) {
+    count += n;
+    var obj = document.getElementById('container-result');
+    obj.innerHTML = `Found ${count} items`;
+}
+
 function f() {
     var qs = document.getElementById("q").value.replace(/　/g, ' ').trim().split(' ');
     if (qs.length == 0) return;
     qs = qs.map(encodeURIComponent).join(',');
+    result_clear();
     get(qs, 'memo', 'container-memo', make_html_memo);
     get(qs, 'aiura', 'container-aiura', make_html_aiura);
     get(qs, 'taglibro', 'container-taglibro', make_html_taglibro);
@@ -77,6 +91,7 @@ function get(qs, api, idName, make) {
                 data.forEach(function(datum) {
                     obj.innerHTML += make(datum);
                 });
+                result_increase(data.length);
             }
         }
     };
@@ -102,6 +117,7 @@ function get(qs, api, idName, make) {
 
     <div style="height:1em"></div>
 
+    <div class="container" id="container-result"></div>
     <div class="container" id="container-aiura"></div>
     <div class="container" id="container-taglibro"></div>
     <div class="container" id="container-memo"></div>
@@ -110,6 +126,7 @@ function get(qs, api, idName, make) {
   <script>
 
 if (location.search && location.search[0] == '?') {
+    result_clear();
     var qs = location.search.slice(1);
     get(qs, 'memo', 'container-memo', make_html_memo);
     get(qs, 'aiura', 'container-aiura', make_html_aiura);
