@@ -36,9 +36,9 @@ function result_increase(n) {
 }
 
 function f() {
-    var qs = document.getElementById("q").value.replace(/　/g, ' ').trim().split(' ');
-    if (qs.length == 0) return;
-    qs = qs.map(encodeURIComponent).join(',');
+    var qs = document.getElementById("q").value.replace(/　/g, ' ').trim();
+    if (qs === '') return;
+    qs = qs.split(' ').map(encodeURIComponent).join(',');
     result_clear();
     get(qs, 'memo', 'container-memo', make_html_memo);
     get(qs, 'aiura', 'container-aiura', make_html_aiura);

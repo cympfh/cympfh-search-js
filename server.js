@@ -38,11 +38,19 @@ function exec(res, file, args, cont) {
     });
 }
 
+function parse(request_url) {
+    let query = url.parse(request_url, true).query;
+    if (query.q === undefined || query.q === '') return false;
+    let words = query.q.split(',').filter(w => w.length > 0);
+    if (words.length == 0) return false;
+    return words
+}
+
 app.get('/search/memo', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    let query = url.parse(req.url, true).query;
-    if (query.q) {
-        let words = query.q.split(',');
+    let words = parse(req.url);
+    if (words) {
+        console.log('memo', words);
         let args = [config.memo.url].concat(words);
         exec(res, 'bin/memo', args, (data) =>
             data.split('\n').filter(line => line.length > 0)
@@ -60,9 +68,9 @@ app.get('/search/memo', (req, res) => {
 
 app.get('/search/aiura', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    let query = url.parse(req.url, true).query;
-    if (query.q) {
-        let words = query.q.split(',');
+    let words = parse(req.url);
+    if (words) {
+        console.log('aiura', words);
         let args = [config.repo.path].concat(words);
         exec(res, 'bin/aiura', args, (data) => {
             let lines = data.split('\n');
@@ -80,9 +88,9 @@ app.get('/search/aiura', (req, res) => {
 
 app.get('/search/taglibro', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    let query = url.parse(req.url, true).query;
-    if (query.q) {
-        let words = query.q.split(',');
+    let words = parse(req.url);
+    if (words) {
+        console.log('taglibro', words);
         let args = [config.repo.path].concat(words);
         exec(res, 'bin/taglibro', args, (data) => {
             let lines = data.split('\n');
