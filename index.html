@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+  <title>/cympfh/search</title>
+
+  <style>
+#container-aiura {
+    border-left: 2px solid #ff3860;
+}
+#container-taglibro {
+    border-left: 2px solid #d0d0d0;
+}
+#container-memo {
+    border-left: 2px solid #303030;
+}
+  </style>
+
+  <script>
+
+
+function f() {
+    var qs = document.getElementById("q").value.replace(/　/g, ' ').trim().split(' ');
+    if (qs.length == 0) return;
+    qs = qs.map(encodeURIComponent).join(',');
+    get(qs, 'memo', 'container-memo', make_html_memo);
+    get(qs, 'aiura', 'container-aiura', make_html_aiura);
+    get(qs, 'taglibro', 'container-taglibro', make_html_taglibro);
+}
+
+function make_html_memo(data) {
+    return `
+<div class="card">
+    <div class="card-content">
+        <p class="date">${data.date}</p>
+        <p>${data.text}</p>
+    </div>
+</div>`;
+}
+
+function make_html_aiura(data) {
+    return `
+<div class="card">
+    <header class="card-header">
+        <a target="_blank" href="http://cympfh.cc/aiura${data.filename}" class="card-header-title">${data.title}</a>
+    </header>
+    <div class="card-content">
+        <p class=abst>${data.subtitles.join(' ')}</p>
+    </div>
+</div>`;
+}
+
+function make_html_taglibro(data) {
+    return `
+<div class="card">
+    <header class="card-header">
+        <a target="_blank" href="http://cympfh.cc/taglibro${data.filename}" class="card-header-title">${data.title}</a>
+    </header>
+    <div class="card-content">
+        <p class=abst>${data.subtitles.join(' ')}</p>
+    </div>
+</div>`;
+}
+
+function get(qs, api, idName, make) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://localhost:10030/search/' + api + '?q=' + qs, true);
+    xhr.onload = function (e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var obj = document.getElementById(idName);
+                obj.innerHTML = '';
+                data.forEach(function(datum) {
+                    obj.innerHTML += make(datum);
+                });
+            }
+        }
+    };
+    xhr.send(null);
+}
+
+
+  </script>
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title"><i class="fa fa-search"></i> cympfh/search</h1>
+      <div class="field has-addons has-addons-centered">
+        <form onsubmit="f(); return false" class="control" style="width: 45%">
+          <input class="input" type="text" id="q" placeholder="Search with keywords">
+        </form>
+        <p class="control">
+          <a class="button is-primary" onclick="f()">Search</a>
+        </p>
+      </div>
+    </div>
+
+    <div style="height:1em"></div>
+
+    <div class="container" id="container-aiura"></div>
+    <div class="container" id="container-taglibro"></div>
+    <div class="container" id="container-memo"></div>
+  </section>
+
+  <script>
+
+if (location.search && location.search[0] == '?') {
+    var qs = location.search.slice(1);
+    get(qs, 'memo', 'container-memo', make_html_memo);
+    get(qs, 'aiura', 'container-aiura', make_html_aiura);
+    get(qs, 'taglibro', 'container-taglibro', make_html_taglibro);
+}
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+repo:
+  path: ~/git/cympfh.github.io/
+  pull_after: True
+memo:
+  url: http://s.cympfh.cc/cympfh/memo

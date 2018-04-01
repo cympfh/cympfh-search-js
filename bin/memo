@@ -1,0 +1,15 @@
+#!/bin/bash
+
+and-grep() {
+    if [ -z "$1" ]; then
+        cat
+    else
+        W="$1"
+        shift 1
+        cat | grep "$W" | and-grep "$@"
+    fi
+}
+
+URL="$1"
+shift 1
+curl -s "$URL" | and-grep "$@"
