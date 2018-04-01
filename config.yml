@@ -3,3 +3,4 @@ repo:
   pull_after: True
 memo:
   url: http://s.cympfh.cc/cympfh/memo
+port: 8083

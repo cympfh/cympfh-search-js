@@ -11,6 +11,7 @@ console.assert(config.memo);
 console.assert(config.memo.url);
 config.repo.path = expandTilde(config.repo.path);
 config.repo.pull_after = !!config.repo.pull_after;
+config.port = config.port || 10030;
 
 var app = express();
 
@@ -85,4 +86,4 @@ app.get('/search', (req, res) => {
     res.sendFile('index.html', {root: __dirname});
 });
 
-app.listen(10030);
+app.listen(config.port);
