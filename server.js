@@ -9,8 +9,8 @@ const {execFile} = require('child_process');
 const config = yaml.readSync('config.yml');
 console.assert(config.repo);
 console.assert(config.repo.path);
-console.assert(config.memo);
-console.assert(config.memo.url);
+console.assert(config.twitter);
+console.assert(config.twitter.url);
 config.repo.path = expandTilde(config.repo.path);
 config.repo.pull_after = !!config.repo.pull_after;
 config.port = config.port || 10030;
@@ -46,13 +46,17 @@ function parse(request_url) {
     return words
 }
 
-app.get('/search/memo', (req, res) => {
+/*
+ * Search in Twitter memo
+ */
+
+app.get('/search/twitter', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     let words = parse(req.url);
     if (words) {
-        console.log('memo', words);
-        let args = [config.memo.url].concat(words);
-        exec(res, 'bin/memo', args, (data) =>
+        console.log('twitter', words);
+        let args = [config.twitter.url].concat(words);
+        exec(res, 'bin/twitter', args, (data) =>
             data.split('\n').filter(line => line.length > 0)
                 .reverse()
                 .slice(0, 20)
@@ -66,45 +70,40 @@ app.get('/search/memo', (req, res) => {
     }
 });
 
-app.get('/search/aiura', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    let words = parse(req.url);
-    if (words) {
-        console.log('aiura', words);
-        let args = [config.repo.path].concat(words);
-        exec(res, 'bin/aiura', args, (data) => {
-            let lines = data.split('\n');
-            let ret = [];
-            for (var i = 0; i + 2 < lines.length; i += 3) {
-                let subs = lines[i+2].split('\t').filter(a => a.length>0);
-                ret.push({filename: lines[i], title: lines[i+1], subtitles: subs});
-            }
-            return ret;
-        });
-    } else {
-        res.send([]);
-    }
-});
+/*
+ * Search in repository
+ */
 
-app.get('/search/taglibro', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    let words = parse(req.url);
-    if (words) {
-        console.log('taglibro', words);
-        let args = [config.repo.path].concat(words);
-        exec(res, 'bin/taglibro', args, (data) => {
-            let lines = data.split('\n');
-            let ret = [];
-            for (var i = 0; i + 2 < lines.length; i += 3) {
-                let subs = lines[i+2].split('\t').filter(a => a.length>0);
-                ret.push({filename: lines[i], title: lines[i+1], subtitles: subs});
-            }
-            return ret;
-        });
-    } else {
-        res.send([]);
-    }
-});
+function get_repository(file) {
+    return (req, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        let words = parse(req.url);
+        if (words) {
+            console.log('search repository', file, words);
+            let args = [config.repo.path].concat(words);
+            console.log(file, args);
+            exec(res, file, args, (data) => {
+                let lines = data.split('\n');
+                let ret = [];
+                for (var i = 0; i + 2 < lines.length; i += 3) {
+                    let subs = lines[i+2].split('\t').filter(a => a.length>0);
+                    ret.push({filename: lines[i], title: lines[i+1], subtitles: subs});
+                }
+                return ret;
+            });
+        } else {
+            res.send([]);
+        }
+    };
+}
+
+app.get('/search/memo', get_repository('bin/memo'));
+app.get('/search/aiura', get_repository('bin/aiura'));
+app.get('/search/taglibro', get_repository('bin/taglibro'));
+
+/*
+ * index.html
+ */
 
 app.get('/search', (req, res) => {
     fs.readFile("./index.html", (err, data) => {
