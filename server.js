@@ -9,8 +9,8 @@ const {execFile} = require('child_process');
 const config = yaml.readSync('config.yml');
 console.assert(config.repo);
 console.assert(config.repo.path);
-console.assert(config.twitter);
-console.assert(config.twitter.url);
+console.assert(config.longinus);
+console.assert(config.longinus.url);
 config.repo.path = expandTilde(config.repo.path);
 config.repo.pull_after = !!config.repo.pull_after;
 config.port = config.port || 10030;
@@ -47,16 +47,16 @@ function parse(request_url) {
 }
 
 /*
- * Search in Twitter memo
+ * Search in longinus memo
  */
 
-app.get('/search/twitter', (req, res) => {
+app.get('/search/longinus', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     let words = parse(req.url);
     if (words) {
-        console.log('twitter', words);
-        let args = [config.twitter.url].concat(words);
-        exec(res, 'bin/twitter', args, (data) =>
+        console.log('longinus', words);
+        let args = [config.longinus.url].concat(words);
+        exec(res, 'bin/longinus', args, (data) =>
             data.split('\n').filter(line => line.length > 0)
                 .reverse()
                 .slice(0, 20)

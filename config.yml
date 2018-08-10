@@ -1,6 +1,6 @@
 repo:
   path: ~/git/cympfh.github.io/
   pull_after: True
-twitter:
+longinus:
   url: http://s.cympfh.cc/cympfh/memo
 port: 8083

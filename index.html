@@ -17,7 +17,7 @@ div.card-content:hover {
 #container-taglibro {
     border-left: 2px solid #d0d0d0;
 }
-#container-twitter {
+#container-longinus {
     border-left: 2px solid #76cae1;
 }
 #container-memo {
@@ -46,7 +46,7 @@ function f() {
     if (qs === '') return;
     qs = qs.split(' ').map(encodeURIComponent).join(',');
     result_clear();
-    get(qs, 'twitter', 'container-twitter', make_html_twitter);
+    get(qs, 'longinus', 'container-longinus', make_html_twitter);
     get(qs, 'memo', 'container-memo', make_html_builder('memo'));
     get(qs, 'taglibro', 'container-taglibro', make_html_builder('taglibro'));
     get(qs, 'aiura', 'container-aiura', make_html_builder('aiura'));
@@ -118,7 +118,7 @@ function get(qs, api, idName, make) {
     <div class="container" id="container-aiura"></div>
     <div class="container" id="container-taglibro"></div>
     <div class="container" id="container-memo"></div>
-    <div class="container" id="container-twitter"></div>
+    <div class="container" id="container-longinus"></div>
   </section>
 
   <script>
@@ -126,7 +126,7 @@ function get(qs, api, idName, make) {
 if (location.search && location.search[0] == '?') {
     result_clear();
     var qs = location.search.slice(1);
-    get(qs, 'twitter', 'container-twitter', make_html_twitter);
+    get(qs, 'longinus', 'container-longinus', make_html_twitter);
     get(qs, 'memo', 'container-memo', make_html_builder('memo'));
     get(qs, 'taglibro', 'container-taglibro', make_html_builder('taglibro'));
     get(qs, 'aiura', 'container-aiura', make_html_builder('aiura'));
