@@ -59,7 +59,6 @@ app.get('/search/longinus', (req, res) => {
         exec(res, 'bin/longinus', args, (data) =>
             data.split('\n').filter(line => line.length > 0)
                 .reverse()
-                .slice(0, 20)
                 .map(line => {
                     let fs = line.split('\t');
                     return {date: fs[0], text: fs[1]};

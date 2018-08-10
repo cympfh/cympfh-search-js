@@ -11,4 +11,4 @@ while [ $# -gt 0 ]; do
     Q="${Q}+$(escape $1)"
     shift
 done
-curl -s "$URL?q=$Q&tail=20"
+curl -s "$URL?q=$Q&tail=32"
