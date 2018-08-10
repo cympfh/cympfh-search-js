@@ -1,10 +1,14 @@
 #!/bin/bash
 
+function escape() {
+    echo "$1" | uri-encode | tr -d '\n'
+}
+
 URL="$1"
-Q="$2"
+Q="$(escape $2)"
 shift 2
 while [ $# -gt 0 ]; do
-    Q="${Q}+$1"
+    Q="${Q}+$(escape $1)"
     shift
 done
 curl -s "$URL?q=$Q&tail=20"
