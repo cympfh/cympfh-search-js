@@ -4,6 +4,7 @@ const fs = require('fs');
 const http = require('http');
 const url = require('url');
 const yaml = require('node-yaml');
+const morgan = require('morgan');
 const {execFile} = require('child_process');
 
 const config = yaml.readSync('config.yml');
@@ -27,6 +28,14 @@ http.get('http://httpbin.org/ip', (response) => {
 });
 
 var app = express();
+app.use(morgan((tokens, req, res) =>
+    [
+        tokens.method(req, res),
+        decodeURIComponent(tokens.url(req, res)),
+        tokens.status(req, res),
+        tokens.res(req, res, 'content-length'), '-',
+        tokens['response-time'](req, res), 'ms'
+    ].join(' ')));
 
 function exec(res, file, args, cont) {
     execFile(file, args, (err, stdout, stderr) => {
@@ -54,7 +63,6 @@ app.get('/search/longinus', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     let words = parse(req.url);
     if (words) {
-        console.log('longinus', words);
         let args = [config.longinus.url].concat(words);
         exec(res, 'bin/longinus', args, (data) =>
             data.split('\n').filter(line => line.length > 0)
@@ -78,9 +86,7 @@ function get_repository(file) {
         res.setHeader('Access-Control-Allow-Origin', '*');
         let words = parse(req.url);
         if (words) {
-            console.log('search repository', file, words);
             let args = [config.repo.path].concat(words);
-            console.log(file, args);
             exec(res, file, args, (data) => {
                 let lines = data.split('\n');
                 let ret = [];
