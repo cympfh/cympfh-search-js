@@ -17,14 +17,17 @@
 #container-booklog {
   border-left: 2px solid #f3f860;
 }
-#container-taglibro {
-  border-left: 2px solid #d0d0d0;
-}
 #container-longinus {
   border-left: 2px solid #76cae1;
 }
 #container-memo {
   border-left: 2px solid #303030;
+}
+#container-paper {
+  border-left: 2px solid #464f4f;
+}
+#container-taglibro {
+  border-left: 2px solid #d0d0d0;
 }
 </style>
 
@@ -50,9 +53,10 @@ function f() {
   result_clear();
   get(qs, 'booklog', 'container-booklog', make_html_booklog);
   get(qs, 'longinus', 'container-longinus', make_html_longinus);
-  get(qs, 'memo', 'container-memo', make_html_builder('memo'));
-  get(qs, 'taglibro', 'container-taglibro', make_html_builder('taglibro'));
   get(qs, 'aiura', 'container-aiura', make_html_builder('aiura'));
+  get(qs, 'memo', 'container-memo', make_html_builder('memo'));
+  get(qs, 'paper', 'container-paper', make_html_builder('paper'));
+  get(qs, 'taglibro', 'container-taglibro', make_html_builder('taglibro'));
 }
 
 function make_html_booklog(data) {
@@ -135,6 +139,7 @@ function get(qs, api, idName, make) {
     <div class="container" id="container-result"></div>
     <div class="container" id="container-aiura"></div>
     <div class="container" id="container-taglibro"></div>
+    <div class="container" id="container-paper"></div>
     <div class="container" id="container-memo"></div>
     <div class="container" id="container-longinus"></div>
     <div class="container" id="container-booklog"></div>
@@ -147,9 +152,10 @@ if (location.search && location.search[0] == '?') {
   var qs = location.search.slice(1);
   get(qs, 'booklog', 'container-booklog', make_html_booklog);
   get(qs, 'longinus', 'container-longinus', make_html_longinus);
+  get(qs, 'aiura', 'container-aiura', make_html_builder('aiura'));
+  get(qs, 'paper', 'container-paper', make_html_builder('paper'));
   get(qs, 'memo', 'container-memo', make_html_builder('memo'));
   get(qs, 'taglibro', 'container-taglibro', make_html_builder('taglibro'));
-  get(qs, 'aiura', 'container-aiura', make_html_builder('aiura'));
 }
 
   </script>

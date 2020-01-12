@@ -1,0 +1,17 @@
+#!/bin/bash
+
+REPO="$1"
+shift 1
+N="$#"
+
+for w in "$@"; do
+  grep -i "$w" "$REPO/paper/"*.md | sed 's/:.*//; s/.*paper//' | uniq
+done |
+sort | uniq -c |
+awk "\$1 == $N { print \$2 }" |
+tac |
+while read name; do
+  echo "${name%md}html"
+  head -1 "$REPO/paper/$name" | sed -E 's/^. ?//'
+  grep '^## ' "$REPO/paper/$name" | sed 's/^## //g' | tr '\n' '\t'; echo
+done

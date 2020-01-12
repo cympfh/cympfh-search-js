@@ -117,8 +117,9 @@ function get_repository(file) {
     };
 }
 
-app.get('/search/memo', get_repository('bin/memo'));
 app.get('/search/aiura', get_repository('bin/aiura'));
+app.get('/search/memo', get_repository('bin/memo'));
+app.get('/search/paper', get_repository('bin/paper'));
 app.get('/search/taglibro', get_repository('bin/taglibro'));
 
 /*
