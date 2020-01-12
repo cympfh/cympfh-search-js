@@ -16,17 +16,6 @@ config.repo.path = expandTilde(config.repo.path);
 config.repo.pull_after = !!config.repo.pull_after;
 config.port = config.port || 10030;
 
-var myself = null;
-http.get('http://httpbin.org/ip', (response) => {
-    let data = '';
-    response.on('data', chunk => { data += chunk; });
-    response.on('end', () => {
-        myself = JSON.parse(data).origin;
-        console.log(`I am ${myself}`);
-        console.log(`Listen on ${myself}:${config.port}`);
-    });
-});
-
 var app = express();
 app.use(morgan((tokens, req, res) =>
     [
@@ -78,6 +67,32 @@ app.get('/search/longinus', (req, res) => {
 });
 
 /*
+ * Search in booklog
+ */
+
+app.get('/search/booklog', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    let words = parse(req.url);
+    if (words) {
+        let args = words;
+        exec(res, 'bin/booklog', args, (data) => {
+            let lines = data.split('\n');
+            var ret = [];
+            for (var i = 0; i + 2 < lines.length; i += 3) {
+                ret.push({
+                    title: lines[i],
+                    image_url: lines[i+1],
+                    datetime: lines[i+2]
+                });
+            }
+            return ret;
+        });
+    } else {
+        res.send([]);
+    }
+});
+
+/*
  * Search in repository
  */
 
@@ -89,7 +104,7 @@ function get_repository(file) {
             let args = [config.repo.path].concat(words);
             exec(res, file, args, (data) => {
                 let lines = data.split('\n');
-                let ret = [];
+                var ret = [];
                 for (var i = 0; i + 2 < lines.length; i += 3) {
                     let subs = lines[i+2].split('\t').filter(a => a.length>0);
                     ret.push({filename: lines[i], title: lines[i+1], subtitles: subs});
@@ -112,7 +127,7 @@ app.get('/search/taglibro', get_repository('bin/taglibro'));
 
 app.get('/search', (req, res) => {
     fs.readFile("./index.html", (err, data) => {
-        data = data.toString().replace(/@MYSELF/, `http://${myself}:${config.port}`);
+        data = data.toString().replace(/@MYSELF/, `http://s.cympfh.cc:${config.port}`);
         res.writeHead(200);
         res.end(data);
     });

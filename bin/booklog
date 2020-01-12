@@ -1,0 +1,10 @@
+#!/bin/bash
+
+KWDS="$@"
+
+function escape() {
+    echo "$1" | uri-encode | tr -d '\n'
+}
+
+URL="https://booklog.jp/users/cympfh?keyword=$(escape "$KWDS")&json=true"
+curl -s "$URL" | jq -r '.books[] | "\(.title)\n\(.image)\n\(.create_on)"'

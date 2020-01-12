@@ -7,92 +7,110 @@
   <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
   <title>/cympfh/search</title>
 
-  <style>
-div.card-content:hover {
-    background-color: #fafafa;
+<style>
+.card-header-title:hover {
+  background-color: #f0f0f0;
 }
 #container-aiura {
-    border-left: 2px solid #ff3860;
+  border-left: 2px solid #ff3860;
+}
+#container-booklog {
+  border-left: 2px solid #f3f860;
 }
 #container-taglibro {
-    border-left: 2px solid #d0d0d0;
+  border-left: 2px solid #d0d0d0;
 }
 #container-longinus {
-    border-left: 2px solid #76cae1;
+  border-left: 2px solid #76cae1;
 }
 #container-memo {
-    border-left: 2px solid #303030;
+  border-left: 2px solid #303030;
 }
-  </style>
+</style>
 
-  <script>
-
-
+<script>
 var count = 0;
 function result_clear() {
-    count = 0;
-    var obj = document.getElementById('container-result');
-    obj.innerHTML = 'searching...';
+  count = 0;
+  document.getElementById('container-result').innerHTML = 'searching...';
+  document.getElementById('container-booklog').innerHTML = '';
+  document.getElementById('container-longinus').innerHTML = '';
 }
 
 function result_increase(n) {
-    count += n;
-    var obj = document.getElementById('container-result');
-    obj.innerHTML = `Found ${count} items`;
+  count += n;
+  var obj = document.getElementById('container-result');
+  obj.innerHTML = `Found ${count} items`;
 }
 
 function f() {
-    var qs = document.getElementById("q").value.replace(/　/g, ' ').trim();
-    if (qs === '') return;
-    qs = qs.split(' ').map(encodeURIComponent).join(',');
-    result_clear();
-    get(qs, 'longinus', 'container-longinus', make_html_twitter);
-    get(qs, 'memo', 'container-memo', make_html_builder('memo'));
-    get(qs, 'taglibro', 'container-taglibro', make_html_builder('taglibro'));
-    get(qs, 'aiura', 'container-aiura', make_html_builder('aiura'));
+  var qs = document.getElementById("q").value.replace(/　/g, ' ').trim();
+  if (qs === '') return;
+  qs = qs.split(' ').map(encodeURIComponent).join(',');
+  result_clear();
+  get(qs, 'booklog', 'container-booklog', make_html_booklog);
+  get(qs, 'longinus', 'container-longinus', make_html_longinus);
+  get(qs, 'memo', 'container-memo', make_html_builder('memo'));
+  get(qs, 'taglibro', 'container-taglibro', make_html_builder('taglibro'));
+  get(qs, 'aiura', 'container-aiura', make_html_builder('aiura'));
 }
 
-function make_html_twitter(data) {
-    return `
+function make_html_booklog(data) {
+  return `
 <div class="card">
-    <div class="card-content">
-        <p class="date">${data.date}</p>
-        <p>${data.text}</p>
-    </div>
+  <header class="card-header">
+    <p class="card-header-title date" style="font-weight:bold;">${data.title}</p>
+    <p class="card-header-title date" style="color:#aaa">${data.datetime}</p>
+  </header>
+  <div class="card-content">
+    <p><img src="${data.image_url}" /></p>
+  </div>
+</div>`;
+}
+
+function make_html_longinus(data) {
+  return `
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title date">${data.date}</p>
+  </header>
+  <div class="card-content">
+    <p>${data.text}</p>
+  </div>
 </div>`;
 }
 
 function make_html_builder(name) {
-    return (data) => {
-        return `
+  return (data) => {
+    return `
 <div class="card">
-    <header class="card-header">
-        <a target="_blank" href="http://cympfh.cc/${name}${data.filename}" class="card-header-title">${name}/&nbsp;${data.title}</a>
-    </header>
-    <div class="card-content">
-        <p class=abst>${data.subtitles.join(' ')}</p>
-    </div>
+  <header class="card-header">
+    <a target="_blank" href="http://cympfh.cc/${name}${data.filename}" class="card-header-title">${name}/&nbsp;${data.title}</a>
+  </header>
+  <div class="card-content">
+    <p class=abst>${data.subtitles.join(' ')}</p>
+  </div>
 </div>`;
     };
 }
 
 function get(qs, api, idName, make) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '@MYSELF/search/' + api + '?q=' + qs, true);
-    xhr.onload = function (e) {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
-                var obj = document.getElementById(idName);
-                obj.innerHTML = '';
-                data.forEach(function(datum) {
-                    obj.innerHTML += make(datum);
-                });
-                result_increase(data.length);
-            }
-        }
-    };
-    xhr.send(null);
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '@MYSELF/search/' + api + '?q=' + qs, true);
+  xhr.onload = function (e) {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        var data = JSON.parse(xhr.responseText);
+        var obj = document.getElementById(idName);
+        obj.innerHTML = '';
+        data.forEach(function(datum) {
+          obj.innerHTML += make(datum);
+        });
+        result_increase(data.length);
+      }
+    }
+  };
+  xhr.send(null);
 }
 
 
@@ -119,17 +137,19 @@ function get(qs, api, idName, make) {
     <div class="container" id="container-taglibro"></div>
     <div class="container" id="container-memo"></div>
     <div class="container" id="container-longinus"></div>
+    <div class="container" id="container-booklog"></div>
   </section>
 
   <script>
 
 if (location.search && location.search[0] == '?') {
-    result_clear();
-    var qs = location.search.slice(1);
-    get(qs, 'longinus', 'container-longinus', make_html_twitter);
-    get(qs, 'memo', 'container-memo', make_html_builder('memo'));
-    get(qs, 'taglibro', 'container-taglibro', make_html_builder('taglibro'));
-    get(qs, 'aiura', 'container-aiura', make_html_builder('aiura'));
+  result_clear();
+  var qs = location.search.slice(1);
+  get(qs, 'booklog', 'container-booklog', make_html_booklog);
+  get(qs, 'longinus', 'container-longinus', make_html_longinus);
+  get(qs, 'memo', 'container-memo', make_html_builder('memo'));
+  get(qs, 'taglibro', 'container-taglibro', make_html_builder('taglibro'));
+  get(qs, 'aiura', 'container-aiura', make_html_builder('aiura'));
 }
 
   </script>
