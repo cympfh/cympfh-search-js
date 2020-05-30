@@ -67,7 +67,18 @@ function make_html_booklog(data) {
     <p class="card-header-title date" style="color:#aaa">${data.datetime}</p>
   </header>
   <div class="card-content">
-    <p><img src="${data.image_url}" /></p>
+    <div class="columns is-mobile">
+      <div class="column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
+        <figure class="image is-4by5">
+          <img src="${data.image_url}" />
+        </figure>
+      </div>
+      <div class="column">
+        <p>
+        ${data.tags.map((tag) => `<span class=tag>${tag}</span>`).join(' ')}
+        </p>
+      </div>
+    </div>
   </div>
 </div>`;
 }

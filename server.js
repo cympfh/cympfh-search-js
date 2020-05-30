@@ -78,11 +78,12 @@ app.get('/search/booklog', (req, res) => {
         exec(res, 'bin/booklog', args, (data) => {
             let lines = data.split('\n');
             var ret = [];
-            for (var i = 0; i + 2 < lines.length; i += 3) {
+            for (var i = 0; i + 3 < lines.length; i += 4) {
                 ret.push({
                     title: lines[i],
                     image_url: lines[i+1],
-                    datetime: lines[i+2]
+                    datetime: lines[i+2],
+                    tags: lines[i+3].trim().replace(/  */g, ' ').split(' '),
                 });
             }
             return ret;
@@ -128,7 +129,8 @@ app.get('/search/taglibro', get_repository('bin/taglibro'));
 
 app.get('/search', (req, res) => {
     fs.readFile("./index.html", (err, data) => {
-        data = data.toString().replace(/@MYSELF/, `http://s.cympfh.cc:${config.port}`);
+        var hostname = 's.cympfh.cc';
+        data = data.toString().replace(/@MYSELF/, `http://${hostname}:${config.port}`);
         res.writeHead(200);
         res.end(data);
     });

@@ -7,4 +7,4 @@ function escape() {
 }
 
 URL="https://booklog.jp/users/cympfh?keyword=$(escape "$KWDS")&json=true"
-curl -s "$URL" | jq -r '.books[] | "\(.title)\n\(.image)\n\(.create_on)"'
+curl -s "$URL" | jq -r '.books[] | "\(.title)\n\(.image)\n\(.create_on)\n\(.category_name) \(.tags | join(" "))"'
